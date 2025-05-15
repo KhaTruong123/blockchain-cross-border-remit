@@ -10,13 +10,13 @@ export class SmsService {
   private readonly logger = new Logger(SmsService.name);
 
   async sendSms(options: SmsOptions): Promise<boolean> {
-    // Trong môi trường dev, chỉ log message thay vì gửi SMS thật
+    // In dev environment, just log the message instead of sending actual SMS
     this.logger.log(`[MOCK SMS] To: ${options.to}, Message: ${options.body}`);
 
-    // Giả lập thành công
+    // Simulate success
     return true;
 
-    // Khi cần dùng Twilio thật, uncomment code dưới đây:
+    // When you need to use real Twilio, uncomment the code below:
     /*
     try {
       const twilioClient = require('twilio')(

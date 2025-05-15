@@ -21,10 +21,10 @@ export class NotificationsService {
 
   async sendNotification(options: NotificationOptions): Promise<boolean> {
     try {
-      // Log thông tin notification
+      // Log notification information
       this.logger.log(`Sending notification to user ${options.userId} via ${options.channel}`);
       
-      // Lưu notification vào database
+      // Save notification to database
       const notification = await this.prisma.notification.create({
         data: {
           userId: options.userId,
@@ -34,11 +34,11 @@ export class NotificationsService {
         },
       });
       
-      // Gửi notification qua kênh phù hợp
+      // Send notification through appropriate channel
       let success = false;
       
       if (options.channel === NotificationChannel.SMS) {
-        // Lấy số điện thoại từ user
+        // Get phone number from user
         const user = await this.prisma.user.findUnique({
           where: { id: options.userId },
           select: { phone: true },
@@ -48,10 +48,10 @@ export class NotificationsService {
           throw new Error(`User ${options.userId} not found`);
         }
         
-        // Xử lý template và payload để tạo nội dung SMS
+        // Process template and payload to create SMS content
         const message = this.formatTemplateMessage(options.templateId, options.payload);
         
-        // Gửi SMS
+        // Send SMS
         success = await this.smsService.sendSms({
           to: user.phone,
           body: message,
@@ -62,7 +62,7 @@ export class NotificationsService {
         success = true; // Mock success
       }
       
-      // Cập nhật thời điểm gửi notification
+      // Update notification sent timestamp
       if (success) {
         await this.prisma.notification.update({
           where: { id: notification.id },
@@ -78,18 +78,18 @@ export class NotificationsService {
   }
   
   private formatTemplateMessage(templateId: string, payload: Record<string, any>): string {
-    // Giả lập templates
+    // Mock templates
     const templates = {
       'transfer_initiated': 'Transfer of ${amount} USD initiated. Tracking ID: ${transferId}',
-      'transfer_completed': 'Your transfer of ${amount} USD (${amountVnd} VND) has been completed!',
+      'transfer_completed': 'Your transfer of ${amount} USD (${amountInVnd} VND) has been completed!',
       'transfer_failed': 'Your transfer of ${amount} USD has failed. Reason: ${reason}',
       'kyc_required': 'Please complete KYC verification for your recent transfer.',
     };
     
-    // Lấy template
+    // Get template
     let message = templates[templateId] || 'Notification from Vikki Remit';
     
-    // Thay thế các biến trong template
+    // Replace variables in template
     Object.entries(payload).forEach(([key, value]) => {
       message = message.replace(`\${${key}}`, value);
     });

@@ -18,16 +18,16 @@ export class KycService {
   async verifyWallet(data: KycVerificationRequest): Promise<KycVerificationResult> {
     this.logger.log(`[MOCK KYC] Verifying wallet: ${data.walletAddress} for transfer: ${data.transferId}`);
 
-    // Trong môi trường dev, luôn trả về kết quả xác minh thành công
-    // Điều này giúp bạn test flow xác minh mà không cần KYC provider thật
+    // In dev environment, always return successful verification result
+    // This helps you test the verification flow without needing a real KYC provider
     
-    // Mô phỏng độ trễ thực tế (1-2 giây)
+    // Simulate realistic delay (1-2 seconds)
     await new Promise(resolve => setTimeout(resolve, 1500));
     
-    // API key chỉ là giá trị giả lập, không thực sự được sử dụng
+    // API key is just a mock value, not actually used
     // const kycApiKey = process.env.KYC_API_KEY;
     
-    // Trong 90% trường hợp, trả về thành công
+    // In 90% of cases, return success
     if (Math.random() < 0.9) {
       return {
         isVerified: true,
@@ -36,14 +36,14 @@ export class KycService {
       };
     }
     
-    // Mô phỏng 10% trường hợp thất bại
+    // Simulate 10% failure cases
     return {
       isVerified: false,
       message: 'Wallet verification failed - suspicious activity detected'
     };
     
     /* 
-    // Code tích hợp thực tế với KYC provider:
+    // Actual integration code with KYC provider:
     try {
       const response = await fetch(process.env.KYC_API_URL, {
         method: 'POST',

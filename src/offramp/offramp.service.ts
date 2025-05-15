@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 
 interface OfframpRequest {
   transferId: string;
-  amount: number;  // Changed from amountVnd to amount
+  amount: number;  // Changed from amountInVnd to amount
   recipientBank: string;
   recipientAccount: string;
 }

@@ -62,7 +62,7 @@ model Transfer {
 model FxQuote {
   id         String   @id @default(uuid())
   source     String
-  rateUsdVnd Float
+  rateUsdToVnd Float
   expiresAt  DateTime
   createdAt  DateTime @default(now())
 }
@@ -72,7 +72,7 @@ model OfframpTransaction {
   transferId        String
   offrampPartner    String
   externalReference String    @unique
-  amountVnd         Float
+  amountInVnd       Float
   fee               Float
   status            OfframpTransactionStatus
   requestedAt       DateTime  @default(now())
