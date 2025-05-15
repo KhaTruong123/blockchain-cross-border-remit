@@ -129,4 +129,4 @@ This platform is designed to be customized for any financial institution:
 
 ## License
 
-Proprietary - Copyright © 2025 - All rights reserved 
+MIT License - Copyright © 2025 - See [LICENSE](LICENSE) file for details 
