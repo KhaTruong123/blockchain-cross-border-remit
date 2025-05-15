@@ -1,0 +1,139 @@
+// This is your Prisma schema file
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String        @id @default(uuid())
+  fullName    String
+  phone       String        @unique
+  kycStatus   String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  bankAccounts BankAccount[]
+  wallets     Wallet[]
+  notifications Notification[]
+}
+
+model BankAccount {
+  id        String     @id @default(uuid())
+  userId    String
+  bankCode  String
+  accountNo String
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  user      User       @relation(fields: [userId], references: [id])
+  transfers Transfer[] @relation("RecipientBankAccount")
+}
+
+model Wallet {
+  id            String     @id @default(uuid())
+  userId        String
+  solanaAddress String     @unique
+  asset         String     @default("USDC")
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  user          User       @relation(fields: [userId], references: [id])
+  sentTransfers Transfer[] @relation("SenderWallet")
+}
+
+model Transfer {
+  id                   String               @id @default(uuid())
+  senderWalletId      String
+  recipientBankAccountId String
+  amountUsd           Float
+  fxRate              Float
+  fee                 Float
+  status              TransferStatus
+  memo                String?
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  senderWallet        Wallet               @relation("SenderWallet", fields: [senderWalletId], references: [id])
+  recipientBankAccount BankAccount         @relation("RecipientBankAccount", fields: [recipientBankAccountId], references: [id])
+  offrampTransactions OfframpTransaction[]
+  kycVerifications    KycVerification[]
+}
+
+model FxQuote {
+  id         String   @id @default(uuid())
+  source     String
+  rateUsdVnd Float
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+}
+
+model OfframpTransaction {
+  id                String    @id @default(uuid())
+  transferId        String
+  offrampPartner    String
+  externalReference String    @unique
+  amountVnd         Float
+  fee               Float
+  status            OfframpTransactionStatus
+  requestedAt       DateTime  @default(now())
+  completedAt       DateTime?
+  callbackPayload   Json?
+  transfer          Transfer  @relation(fields: [transferId], references: [id])
+}
+
+model Notification {
+  id         String           @id @default(uuid())
+  userId     String
+  channel    NotificationChannel
+  templateId String
+  payload    Json
+  sentAt     DateTime?
+  createdAt  DateTime         @default(now())
+  user       User             @relation(fields: [userId], references: [id])
+}
+
+model PartnerBank {
+  id            String   @id @default(uuid())
+  name          String
+  publicKey     String
+  walletAddress String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model KycVerification {
+  id            String    @id @default(uuid())
+  transferId    String
+  kycProvider   String
+  kycProof      String
+  walletAddress String
+  status        KycVerificationStatus
+  verifiedAt    DateTime?
+  createdAt     DateTime  @default(now())
+  transfer      Transfer  @relation(fields: [transferId], references: [id])
+}
+
+enum TransferStatus {
+  PENDING
+  VALID
+  INVALID
+  COMPLETED
+  FAILED
+}
+
+enum OfframpTransactionStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+enum NotificationChannel {
+  SMS
+  EMAIL
+}
+
+enum KycVerificationStatus {
+  PENDING
+  VERIFIED
+  FAILED
+} 
