@@ -3,7 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { BullModule } from '@nestjs/bull';
 import { TransfersModule } from './transfers/transfers.module';
 import { WebhooksModule } from './webhooks/webhooks.module';
-import { OfframpModule } from './offramp.module';
+import { OfframpModule } from './offramp/offramp.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { KycModule } from './kyc/kyc.module';
 import { PartnersModule } from './partners/partners.module';
